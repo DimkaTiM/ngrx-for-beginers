@@ -1,4 +1,7 @@
 import {Component} from '@angular/core';
+import {Store} from "@ngrx/store";
+import {clear, countSelector, decrease, increase} from "./reducers/counter";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-root',
@@ -6,25 +9,38 @@ import {Component} from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  counter = 0;
   updateAt?: number;
+  count$ = this.store.select(countSelector);
+  cannotDecrease$ = this.count$.pipe(map(count => count <= 0));
 
-  getCannotDecrease(): boolean {
-    return this.counter <= 0;
+  constructor(private store: Store
+  ) {
   }
 
-  increase(): void {
-    this.updateAt = Date.now();
-    this.counter++;
+  getCannotDecrease()
+    :
+    boolean {
+    return false;
   }
 
-  decrease(): void {
+  increase()
+    :
+    void {
     this.updateAt = Date.now();
-    this.counter--;
+    this.store.dispatch(increase());
   }
 
-  clear(): void {
+  decrease()
+    :
+    void {
     this.updateAt = Date.now();
-    this.counter = 0;
+    this.store.dispatch(decrease());
+  }
+
+  clear()
+    :
+    void {
+    this.updateAt = Date.now();
+    this.store.dispatch(clear());
   }
 }
